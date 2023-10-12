@@ -2,10 +2,10 @@
 #include <stdio.h>
 
 /**
- * fizz_buzz - prints numbers from 1 to 100, replacing multiples of 3 and 5
+ * main - prints numbers from 1 to 100, replacing multiples of 3 and 5
  * with "Fizz" and "Buzz" respectively.
  */
-void fizz_buzz(void)
+int main(void)
 {
 	int i;
 
@@ -22,5 +22,5 @@ void fizz_buzz(void)
 	printf(" ");
 	}
 	printf("\n");
+	return (0);
 }
-
