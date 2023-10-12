@@ -4,6 +4,7 @@
 /**
  * main - prints numbers from 1 to 100, replacing multiples of 3 and 5
  * with "Fizz" and "Buzz" respectively.
+ * Return: Always (0)
  */
 int main(void)
 {
