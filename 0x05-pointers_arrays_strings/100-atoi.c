@@ -2,46 +2,43 @@
 
 /**
  * _atoi - Converts a string to an integer.
- * @s: Pointer to the string.
+ * @s: The input string.
  *
- * Return: The converted integer.
+ * Return: The integer converted from the string.
  */
 int _atoi(char *s)
 {
-	unsigned long result = 0;
-	int sign = 1;
 	int i = 0;
+	int num = 0;
+	int len = 0;
+	int negative_count = 0;
+	int digit = 0;
+	int found_digit = 0;
 
-	if (s[0] == '-')
-	{
-		sign = -1;
-		i++;
-	}
-	while (s[i] != '\0')
-	{
+	while (s[len] != '\0')
+		len++;
 
-	if (s[0] == '+')
+	while (i < len && !found_digit)
 	{
-		i++;
-	}
-	while (s[i] != '\0')
-	{
+		if (s[i] == '-')
+			negative_count++;
+
 		if (s[i] >= '0' && s[i] <= '9')
 		{
-			result = result * 10 + (s[i] - '0');
-		}
-		else
-		{
-			break;
+			digit = s[i] - '0';
+			if (negative_count % 2)
+				digit = -digit;
+			num = num * 10 + digit;
+			found_digit = 1;
+
+			if (s[i + 1] < '0' || s[i + 1] > '9')
+				break;
+			found_digit = 0;
 		}
 		i++;
 	}
-
-	if (result > INT_MAX && sign == 1)
-		return (INT_MAX);
-
-	if (result > INT_MAX && sign == -1)
-		return (INT_MIN);
-
-	return ((int)(sign * result));
+	if (!found_digit)
+		return (0);
+	return (num);
 }
+
