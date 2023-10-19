@@ -15,18 +15,23 @@ char *leet(char *str)
 	while (*str)
 	{
 		int i = 0;
+		int replaced = 0;
 
 		while (leet_chars[i])
 		{
 			if (*str == leet_chars[i])
 			{
 				*str = leet_replacements[i];
+				replaced = 1;
 				break;
 			}
 			i++;
 		}
 
-	str++;
+	if (!replaced)
+	{
+		str++;
+	}
 	}
 
 	return (result);
