@@ -8,26 +8,19 @@
  */
 char *leet(char *str)
 {
-	char *result = str;
-	char leet_chars[] = "aAeEoOtTlL";
-	char leet_map[] = "44370171";
-	int i;
+	char s1[] = "aAeEoOtTlL";
+	char s2[] = "44370171";
+	int i, j;
 
-	while (*str)
+	for (i = 0; str[i] != '\0'; i++)
 	{
-		i = 0;
-		while (leet_chars[i])
+		for (j = 0; j < 10; j++)
 		{
-			if (*str == leet_chars[i])
+			if (str[i] == s1[j])
 			{
-				*str = leet_map[i];
-				break;
+				str[i] = s2[j];
 			}
-			i++;
 		}
-		str++;
 	}
-
-	return (result);
+	return (str);
 }
-
