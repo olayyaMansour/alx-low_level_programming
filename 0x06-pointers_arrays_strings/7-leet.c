@@ -11,7 +11,7 @@ char *leet(char *str)
 	char *result = str;
 	char leet_chars[] = "aAeEoOtTlL";
 	char leet_map[] = "44370171";
-	int i, j;
+	int i;
 
 	while (*str)
 	{
