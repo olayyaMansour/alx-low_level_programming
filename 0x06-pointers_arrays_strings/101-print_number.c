@@ -1,5 +1,10 @@
 #include "main.h"
 
+/**
+ * print_number - Prints an integer using _putchar
+ * @num: The integer to print
+ */
+
 void print_number(int num)
 {
 	unsigned int n;
