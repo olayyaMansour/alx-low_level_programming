@@ -11,19 +11,21 @@ unsigned int _strspn(char *s, char *accept)
 {
 	unsigned int count = 0;
 	int found;
+	char *pAccept;
 
 	while (*s)
 	{
 		found = 0;
-		while (*accept)
+		pAccept = accept;
+		while (*pAccept)
 		{
-			if (*s == *accept)
+			if (*s == *pAccept)
 			{
 				count++;
 				found = 1;
 				break;
 			}
-			accept++;
+			pAccept++;
 		}
 		if (!found)
 			return (count);
