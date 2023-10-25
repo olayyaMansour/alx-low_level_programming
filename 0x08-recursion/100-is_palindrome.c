@@ -4,9 +4,7 @@ int is_palindrome_helper(char *s, int start, int end);
 /**
  * is_palindrome - Check if a string is a palindrome
  * @s: The string to check
- * @start: The starting index of the string (used for recursion)
- * @end: The ending index of the string (used for recursion)
- * 
+ *
  * Return: 1 if palindrome, 0 if not
  */
 int is_palindrome(char *s)
@@ -19,7 +17,7 @@ int is_palindrome(char *s)
  * @s: The string to check
  * @start: The starting index of the substring (used for recursion)
  * @end: The ending index of the substring (used for recursion)
- * 
+ *
  * Return: 1 if palindrome, 0 if not
  */
 int is_palindrome_helper(char *s, int start, int end)
