@@ -8,16 +8,22 @@
  *
  * Return: The number of words in the string.
  */
-int count_words(char *str) {
+int count_words(char *str)
+{
 	int count = 0;
 	int in_word = 0;
 
-	while (*str) {
-		if (*str == ' ') {
+	while (*str)
+	{
+		if (*str == ' ')
+		{
 			if (in_word)
 				in_word = 0;
-		} else {
-			if (!in_word) {
+		}
+		else
+		{
+			if (!in_word)
+			{
 				count++;
 				in_word = 1;
 			}
@@ -34,7 +40,8 @@ int count_words(char *str) {
  *
  * Return: A pointer to an array of strings (words).
  */
-char **strtow(char *str) {
+char **strtow(char *str)
+{
 	int words, i, j, k;
 	char **word_array;
 	char *word;
@@ -49,7 +56,8 @@ char **strtow(char *str) {
 	if (word_array == NULL)
 		return (NULL);
 
-	for (i = 0; i < words; i++) {
+	for (i = 0; i < words; i++)
+	{
 		while (*str == ' ' && *str != '\0')
 			str++;
 
@@ -58,7 +66,8 @@ char **strtow(char *str) {
 			in_word++;
 
 		word = (char *)malloc((in_word + 1) * sizeof(char));
-		if (word == NULL) {
+		if (word == NULL)
+		{
 			for (k = i; k >= 0; k--)
 				free(word_array[k]);
 			free(word_array);
@@ -74,34 +83,5 @@ char **strtow(char *str) {
 
 	word_array[i] = NULL;
 	return (word_array);
-}
-
-/**
- * print_tab - Prints an array of strings.
- * @tab: The array to print.
- */
-void print_tab(char **tab) {
-	int i;
-
-	for (i = 0; tab[i] != NULL; ++i) {
-		printf("%s\n", tab[i]);
-	}
-}
-
-/**
- * main - Check the code for ALX School students.
- *
- * Return: 1 if an error occurred, 0 otherwise.
- */
-int main(void) {
-	char **tab;
-
-	tab = strtow("      ALX School         #cisfun      ");
-	if (tab == NULL) {
-		printf("Failed\n");
-		return (1);
-	}
-	print_tab(tab);
-	return (0);
 }
 
