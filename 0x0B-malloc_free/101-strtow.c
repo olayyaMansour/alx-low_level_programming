@@ -1,5 +1,10 @@
 #include <stdlib.h>
-
+/**
+ * is_space - Checks if a character is a space, tab, or newline.
+ * @c: The character to check.
+ *
+ * Return: 1 if it is a space, tab, or newline, 0 otherwise.
+ */
 int is_space(char c)
 {
 	return (c == ' ' || c == '\t' || c == '\n');
@@ -29,7 +34,12 @@ int count_words(char *str)
 	}
 	return (count);
 }
-
+/**
+ * duplicate_word - Creates a duplicate of a word from a string.
+ * @str: The string containing the word.
+ *
+ * Return: A newly allocated string containing the word, or NULL on failure.
+ */
 char *duplicate_word(char *str)
 {
 	char *word;
