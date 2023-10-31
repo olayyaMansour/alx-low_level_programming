@@ -1,87 +1,105 @@
-#include "main.h"
-#include <stdio.h>
 #include <stdlib.h>
 
-/**
- * count_words - Counts the number of words in a string.
- * @str: The string to count words from.
- *
- * Return: The number of words in the string.
- */
-int count_words(char *str)
+int is_space(char c)
 {
-	int count = 0;
-	int in_word = 0;
-
-	while (*str)
-	{
-		if (*str == ' ')
-		{
-			if (in_word)
-				in_word = 0;
-		}
-		else
-		{
-			if (!in_word)
-			{
-				count++;
-				in_word = 1;
-			}
-		}
-		str++;
-	}
-
-	return (count);
+    return (c == ' ' || c == '\t' || c == '\n');
 }
 
-/**
- * strtow - Splits a string into words.
- * @str: The string to split.
- *
- * Return: A pointer to an array of strings (words).
- */
+int count_words(char *str)
+{
+    int count = 0;
+    int is_word = 0;
+
+    while (*str)
+    {
+        if (is_space(*str))
+        {
+            is_word = 0;
+        }
+        else if (!is_word)
+        {
+            is_word = 1;
+            count++;
+        }
+        str++;
+    }
+    return (count);
+}
+
+char *duplicate_word(char *str)
+{
+    char *word;
+    int len = 0;
+
+    while (str[len] && !is_space(str[len]))
+    {
+        len++;
+    }
+    word = (char *)malloc(len + 1);
+
+    if (word)
+    {
+        int i;
+        for (i = 0; i < len; i++)
+        {
+            word[i] = str[i];
+        }
+        word[len] = '\0';
+    }
+
+    return (word);
+}
+
 char **strtow(char *str)
 {
-	int words, i, j, k;
-	char **word_array;
-	char *word;
-	int in_word = 0;
+    int words, i;
+    char **word_array;
 
-	if (str == NULL || str[0] == '\0')
-		return (NULL);
+    if (!str || !*str)
+    {
+        return (NULL);
+    }
 
-	words = count_words(str);
+    words = count_words(str);
+    if (words == 0)
+    {
+        return (NULL);
+    }
 
-	word_array = (char **)malloc((words + 1) * sizeof(char *));
-	if (word_array == NULL)
-		return (NULL);
+    word_array = (char **)malloc(sizeof(char *) * (words + 1));
+    if (word_array)
+    {
+        int j;
+        int in_word = 0;
+        for (i = 0, j = 0; str[i]; i++)
+        {
+            if (!is_space(str[i]))
+            {
+                if (!in_word)
+                {
+                    word_array[j] = duplicate_word(str + i);
+                    in_word = 1;
+                    if (!word_array[j])
+                    {
+                        while (j >= 0)
+                        {
+                            free(word_array[j]);
+                            j--;
+                        }
+                        free(word_array);
+                        return (NULL);
+                    }
+                    j++;
+                }
+            }
+            else
+            {
+                in_word = 0;
+            }
+        }
+        word_array[words] = NULL;
+    }
 
-	for (i = 0; i < words; i++)
-	{
-		while (*str == ' ' && *str != '\0')
-			str++;
-
-		in_word = 0;
-		for (j = 0; str[j] != ' ' && str[j] != '\0'; j++)
-			in_word++;
-
-		word = (char *)malloc((in_word + 1) * sizeof(char));
-		if (word == NULL)
-		{
-			for (k = i; k >= 0; k--)
-				free(word_array[k]);
-			free(word_array);
-			return (NULL);
-		}
-
-		for (k = 0; k < in_word; k++)
-			word[k] = str[k];
-		word[k] = '\0';
-		word_array[i] = word;
-		str += in_word;
-	}
-
-	word_array[i] = NULL;
-	return (word_array);
+    return (word_array);
 }
 
