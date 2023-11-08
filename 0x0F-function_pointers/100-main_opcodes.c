@@ -1,6 +1,7 @@
 #include "function_pointers.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 
 /**
  * main - Prints the opcodes of its own main function.
@@ -26,8 +27,9 @@ int main(int argc, char *argv[])
 	}
 
 	unsigned char *main_ptr = (unsigned char *)main;
+	int i;
 
-	for (int i = 0; i < num_bytes; i++)
+	for (i = 0; i < num_bytes; i++)
 	{
 		printf("%02x", main_ptr[i]);
 		if (i < num_bytes - 1)
