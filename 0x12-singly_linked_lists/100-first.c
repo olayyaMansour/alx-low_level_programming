@@ -1,10 +1,5 @@
 #include <stdio.h>
-
-/**
- * myStartupFun - function to be executed before main
- */
-void myStartupFun(void) __attribute__((constructor));
-
+#include "lists.h"
 /**
  * myStartupFun - function to be executed before main
  */
