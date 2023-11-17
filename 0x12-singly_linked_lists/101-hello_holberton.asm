@@ -7,7 +7,7 @@ section		.text
 	extern printf
 
 main:
-	mov	edi, msg
+	mov	edi, hello
 	mov	eax,	0
 	call	printf
 
