@@ -1,7 +1,9 @@
-#include <stdio.h>
 #include "lists.h"
+void myStartupFun(void) __attributr__ ((constructor));
 /**
  * myStartupFun - function to be executed before main
+ *
+ * Return: void
  */
 void myStartupFun(void)
 {
