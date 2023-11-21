@@ -14,7 +14,7 @@ size_t count_loop_nodes(const listint_t *head)
 	size_t unique_nodes = 1;
 
 	if (head == NULL || head->next == NULL)
-		return 0;
+		return (0);
 
 	slow = head->next;
 	fast = (head->next)->next;
