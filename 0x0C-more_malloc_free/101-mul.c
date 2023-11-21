@@ -1,37 +1,37 @@
-#include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
-/**
- * main - Entry point of the program
- * @argc: Number of command-line arguments
- * @argv: Array of command-line arguments
- *
- * Return: 0 for success, 98 for error
- */
-int main(int argc, char *argv[])
-{
-	char *num1;
-	char *num2;
-	int i;
-	int j;
-	int result;
 
-	if (argc != 3)
-	{
-		printf("Error\n");
-		return (98);
-	}
+int is_digit(char *str) {
+    while (*str) {
+        if (*str < '0' || *str > '9') {
+            return 0;
+        }
+        str++;
+    }
+    return 1;
+}
 
-	num1 = argv[1];
-	num2 = argv[2];
+int main(int argc, char *argv[]) {
+    char *num1;
+    char *num2;
+    int result;
 
-	for (i = 0; num1[i] != '\0'; i++)
+    if (argc != 3) {
+        printf("Error\n");
+        return 98;
+    }
 
-	for (j = 0; num2[j] != '\0'; j++)
+    num1 = argv[1];
+    num2 = argv[2];
 
-	result = atoi(num1) * atoi(num2);
+    if (!is_digit(num1) || !is_digit(num2)) {
+        printf("Error\n");
+        return 98;
+    }
 
-	printf("%d\n", result);
-	return (0);
+    result = atoi(num1) * atoi(num2);
+    printf("%d\n", result);
+
+    return 0;
 }
 
