@@ -1,54 +1,65 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <elf.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdarg.h>
 
-#define BUF_SIZE 1024
+#define BUFFER_SIZE 1024
 
-void print_error(const char *msg) {
-    dprintf(2, "%s\n", msg);
-    exit(98);
+/**
+ * error_exit - handles errors and exits the program
+ * @code: exit code to use
+ * @msg: error message format string
+ * @...: variable arguments for the format string
+ */
+void error_exit(int code, const char *msg, ...)
+{
+	va_list args;
+	va_start(args, msg);
+	dprintf(STDERR_FILENO, msg, args);
+	va_end(args);
+	exit(code);
 }
 
-void read_elf_header(int fd) {
-    Elf64_Ehdr header;
-    int i;
+/**
+ * main - entry point of the program
+ * @argc: argument count
+ * @argv: argument vector
+ * Return: 0 on success, otherwise appropriate error code
+ */
+int main(int argc, char *argv[])
+{
+	int file_from, file_to, r, w;
+	char buffer[BUFFER_SIZE];
 
-    if (read(fd, &header, sizeof(header)) != sizeof(header))
-        print_error("Error reading ELF header");
+	if (argc != 3)
+		error_exit(97, "Usage: cp file_from file_to\n");
 
-    printf("ELF Header:\n");
-    printf("  Magic:   ");
-    for (i = 0; i < EI_NIDENT; i++)
-        printf("%02x%c", header.e_ident[i], i + 1 < EI_NIDENT ? ' ' : '\n');
-    printf("  Class:                             %s\n", header.e_ident[EI_CLASS] == ELFCLASS64 ? "ELF64" : "ELF32");
-    printf("  Data:                              %s\n", header.e_ident[EI_DATA] == ELFDATA2LSB ? "2's complement, little endian" : "2's complement, big endian");
-    printf("  Version:                           %d (current)\n", header.e_ident[EI_VERSION]);
-    printf("  OS/ABI:                            %s\n", header.e_ident[EI_OSABI] == ELFOSABI_SYSV ? "UNIX - System V" : "unknown");
-    printf("  ABI Version:                       %d\n", header.e_ident[EI_ABIVERSION]);
-    printf("  Type:                              %s\n", header.e_type == ET_EXEC ? "EXEC (Executable file)" : "unknown");
-    printf("  Entry point address:               0x%lx\n", (unsigned long)header.e_entry);
-}
+	file_from = open(argv[1], O_RDONLY);
+	if (file_from == -1)
+		error_exit(98, "Error: Can't read from file %s\n", argv[1]);
 
-int main(int argc, char *argv[]) {
-    int fd;
+	file_to = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH);
+	if (file_to == -1)
+		error_exit(99, "Error: Can't write to %s\n", argv[2]);
 
-    if (argc != 2) {
-        print_error("Usage: elf_header elf_filename");
-    }
+	do {
+		r = read(file_from, buffer, BUFFER_SIZE);
+		if (r == -1)
+			error_exit(98, "Error: Can't read from file %s\n", argv[1]);
 
-    fd = open(argv[1], O_RDONLY);
-    if (fd == -1) {
-        print_error("Error: Can't open file");
-    }
+		w = write(file_to, buffer, r);
+		if (w == -1)
+			error_exit(99, "Error: Can't write to %s\n", argv[2]);
+	} while (r > 0);
 
-    read_elf_header(fd);
+	if (close(file_from) == -1)
+		error_exit(100, "Error: Can't close fd %d\n", file_from);
+	if (close(file_to) == -1)
+		error_exit(100, "Error: Can't close fd %d\n", file_to);
 
-    if (close(fd) == -1) {
-        print_error("Error: Can't close file descriptor");
-    }
-
-    return 0;
+	return (0);
 }
 
