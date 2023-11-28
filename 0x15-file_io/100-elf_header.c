@@ -1,12 +1,10 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <elf.h>
 #include <stdarg.h>
 
-#define BUFFER_SIZE 1024
 
 /**
  * error_exit - handles errors and exits the program
@@ -14,14 +12,52 @@
  * @msg: error message format string
  * @...: variable arguments for the format string
  */
-void error_exit(int code, const char *msg, ...)
-{
+void error_exit(int code, const char *msg, ...) {
 	va_list args;
-
 	va_start(args, msg);
 	dprintf(STDERR_FILENO, msg, args);
 	va_end(args);
 	exit(code);
+}
+
+/**
+ * print_elf_header - prints ELF header information
+ * @ehdr: ELF header structure
+ */
+void print_elf_header(Elf64_Ehdr *ehdr) {
+	int i;
+
+	printf("ELF Header:\n");
+	printf("	Magic:   ");
+	for (i = 0; i < EI_NIDENT; ++i)
+		printf("%02x%c", ehdr->e_ident[i], i + 1 < EI_NIDENT ? ' ' : '\n');
+
+	printf("	Class:                             ");
+	switch (ehdr->e_ident[EI_CLASS]) {
+		case ELFCLASS32:
+			printf("ELF32\n");
+			break;
+		case ELFCLASS64:
+			printf("ELF64\n");
+			break;
+		default:
+			printf("<unknown: %x>\n", ehdr->e_ident[EI_CLASS]);
+	}
+
+	printf("	Data:                              %s\n", ehdr->e_ident[EI_DATA] == ELFDATA2LSB ? "2's complement, little endian" :
+		(ehdr->e_ident[EI_DATA] == ELFDATA2MSB ? "2's complement, big endian" : "<unknown>"));
+
+	printf("	Version:                           %d (current)\n", ehdr->e_ident[EI_VERSION]);
+	printf("	OS/ABI:                            %s\n", ehdr->e_ident[EI_OSABI] == ELFOSABI_SYSV ? "UNIX - System V" :
+		(ehdr->e_ident[EI_OSABI] == ELFOSABI_NETBSD ? "UNIX - NetBSD" :
+		(ehdr->e_ident[EI_OSABI] == ELFOSABI_SOLARIS ? "UNIX - Solaris" : "<unknown>")));
+
+	printf("	ABI Version:                       %d\n", ehdr->e_ident[EI_ABIVERSION]);
+
+	printf("	Type:                              %s\n", ehdr->e_type == ET_EXEC ? "EXEC (Executable file)" :
+		(ehdr->e_type == ET_DYN ? "DYN (Shared object file)" : "<unknown>"));
+
+	printf("	Entry point address:               %lx\n", (unsigned long)ehdr->e_entry);
 }
 
 /**
@@ -30,37 +66,26 @@ void error_exit(int code, const char *msg, ...)
  * @argv: argument vector
  * Return: 0 on success, otherwise appropriate error code
  */
-int main(int argc, char *argv[])
-{
-	int file_from, file_to, r, w;
-	char buffer[BUFFER_SIZE];
+int main(int argc, char *argv[]) {
+	int fd;
+	Elf64_Ehdr ehdr;
 
-	if (argc != 3)
-		error_exit(97, "Usage: cp file_from file_to\n");
+	if (argc != 2)
+		error_exit(98, "Usage: elf_header elf_filename\n");
 
-	file_from = open(argv[1], O_RDONLY);
-	if (file_from == -1)
-		error_exit(98, "Error: Can't read from file %s\n", argv[1]);
+	fd = open(argv[1], O_RDONLY);
+	if (fd == -1)
+		error_exit(98, "Error: Cannot open file %s\n", argv[1]);
 
-	file_to = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC,
-	S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH);
-	if (file_to == -1)
-		error_exit(99, "Error: Can't write to %s\n", argv[2]);
+	if (read(fd, &ehdr, sizeof(ehdr)) != sizeof(ehdr))
+		error_exit(98, "Error: Cannot read ELF header from file %s\n", argv[1]);
 
-	do {
-		r = read(file_from, buffer, BUFFER_SIZE);
-		if (r == -1)
-			error_exit(98, "Error: Can't read from file %s\n", argv[1]);
+	if (lseek(fd, 0, SEEK_SET) == -1)
+		error_exit(98, "Error: Cannot rewind file %s\n", argv[1]);
 
-		w = write(file_to, buffer, r);
-		if (w == -1)
-			error_exit(99, "Error: Can't write to %s\n", argv[2]);
-	} while (r > 0);
+	print_elf_header(&ehdr);
 
-	if (close(file_from) == -1)
-		error_exit(100, "Error: Can't close fd %d\n", file_from);
-	if (close(file_to) == -1)
-		error_exit(100, "Error: Can't close fd %d\n", file_to);
+	close(fd);
 
 	return (0);
 }
